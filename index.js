@@ -35,6 +35,7 @@ async function run() {
     const productCollection = client.db("elite").collection("product")
     const userDatabase = client.db("elite").collection("user")
     const orderCollection = client.db("elite").collection("order")
+    const paymentInfor = client.db("elite").collection("payment")
 
       // to get all product
       app.get('/products', async (req, res) => {
@@ -79,6 +80,13 @@ async function run() {
         res.send(order);
     });
 
+    // to get product data base on email
+    app.delete('/allProduct/:email', async (req, res) => {
+        const userEmail = req.params.email;
+        const order = await orderCollection.deleteMany({ userEmail })
+        res.send(order);
+    });
+
  // Stripe payment endpoint
  app.post('/stripe-payment-add', async (req, res) => {
   try {
@@ -98,7 +106,21 @@ async function run() {
     console.error('Error creating payment intent', error);
     res.status(500).send({ error: 'Payment failed' });
   }
-});
+ });
+    
+    // to save user payment data
+    app.post('/payment', async (req, res) => {
+        const payment = req.body;
+        const result = await paymentInfor.insertOne(payment);
+        res.send(result);
+    });
+
+    // get payment data
+    app.get('/payment', async (req, res) => {
+        const payment = await paymentInfor.find().toArray()
+        res.send(payment);
+    });
+
 
   } finally {
   }
