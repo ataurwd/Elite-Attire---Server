@@ -122,6 +122,34 @@ async function run() {
         res.send(payment);
     });
 
+    // to get spacific payment data using id
+    app.get('/payment/:id', async (req, res) => {
+        const id = req.params.id;
+        const payment = await paymentInfor.findOne({ _id: new ObjectId(id) });
+        res.send(payment);
+    });
+
+    // to update order status
+    app.patch('/payment/:id', async (req, res) => {
+      const orderId = req.params.id;
+      const { status } = req.body;
+      try {
+        // Update the order status in the database
+        const result = await paymentInfor.updateOne(
+          { _id: new ObjectId(orderId) },
+          { $set: { status: status } }
+        );
+    
+        if (result.matchedCount === 0) {
+          return res.status(404).send({ message: 'Order not found' });
+        }
+    
+        res.send({ message: 'Order status updated successfully' });
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Internal Server Error' });
+      }
+    });
 
     // add to wishlist
     app.post('/wishlist', async (req, res) => {
