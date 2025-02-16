@@ -36,6 +36,7 @@ async function run() {
     const userDatabase = client.db("elite").collection("user")
     const orderCollection = client.db("elite").collection("order")
     const paymentInfor = client.db("elite").collection("payment")
+    const wishlist = client.db("elite").collection("wishitem")
 
       // to get all product
       app.get('/products', async (req, res) => {
@@ -122,6 +123,18 @@ async function run() {
     });
 
 
+    // add to wishlist
+    app.post('/wishlist', async (req, res) => {
+      const order = req.body;
+      const result = await wishlist.insertOne(order);
+      res.send(result);
+  });
+
+    // get wishlist data
+    app.get('/wishlist', async (req, res) => {
+        const result = await wishlist.find().toArray()
+        res.send(result);
+    });
   } finally {
   }
 }
