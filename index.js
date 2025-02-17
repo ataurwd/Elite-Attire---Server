@@ -54,6 +54,20 @@ async function run() {
         const products = await productCollection.find().toArray();
         res.send(products);
       });
+    
+    // to get single product base on id
+    app.get('/products/:id', async (req, res) => {
+        const id = req.params.id;
+        const product = await productCollection.findOne({ _id: new ObjectId(id) });
+      res.send(product);
+    });
+
+    // to delete single product fron the database
+    app.delete('/products/:id', async (req, res) => {
+        const id = req.params.id;
+        const result = await productCollection.deleteOne({ _id: new ObjectId(id) });
+        res.send(result);
+    });
 
       // to add user data form the database 
       app.post('/user', async (req, res) => {
