@@ -40,6 +40,15 @@ async function run() {
     const paymentInfor = client.db("elite").collection("payment")
     const wishlist = client.db("elite").collection("wishitem")
 
+
+    // to post product data to the collections
+    app.post('/product', async (req, res) => {
+        const product = req.body;
+        const result = await productCollection.insertOne(product);
+        res.send(result);
+    });
+
+
       // to get all product
       app.get('/products', async (req, res) => {
         const products = await productCollection.find().toArray();
