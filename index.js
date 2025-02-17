@@ -69,6 +69,47 @@ async function run() {
         res.send(result);
     });
 
+
+// PUT API to update a product based on its ID
+app.put('/products/:id', async (req, res) => {
+    try {
+        const id = req.params.id; // Get the ID from the request params
+        const { productName, category, material, price, description, quantity, image } = req.body; // Get the updated fields
+
+        // Validate if the provided ID is a valid ObjectId
+        if (!ObjectId.isValid(id)) {
+            return res.status(400).json({ error: "Invalid product ID format" });
+        }
+
+        const updatedProduct = {
+          productName,
+            category,
+            material,
+            price,
+            description,
+            quantity,
+            image,
+        };
+
+        // Perform the update operation
+        const result = await productCollection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: updatedProduct }
+        );
+
+        // Check if the product was found and updated
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        res.status(200).json({ message: "Product updated successfully", updatedProduct });
+    } catch (error) {
+        console.error("Error updating product:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+
       // to add user data form the database 
       app.post('/user', async (req, res) => {
         const user = req.body;
