@@ -97,8 +97,15 @@ async function run() {
         res.send(order);
     });
 
+    // to get data base on the email
+    app.get('/allProduct/email/:email', async (req, res) => {
+        const userEmail = req.params.email;
+        const order = await orderCollection.find({ userEmail }).toArray()
+        res.send(order);
+    });
+
     // to get product data base on email
-    app.delete('/allProduct/:email', async (req, res) => {
+    app.delete('/allProduct/email/:email', async (req, res) => {
         const userEmail = req.params.email;
         const order = await orderCollection.deleteMany({ userEmail })
         res.send(order);
@@ -108,7 +115,7 @@ async function run() {
  app.post('/stripe-payment-add', async (req, res) => {
   try {
     const { price } = req.body;
-    const amount = parseInt(price * 1); // Stripe expects the amount in cents
+    const amount = parseInt(price * 1); 
 
     // Create the payment intent with Stripe
     const paymentIntent = await stripe.paymentIntents.create({
