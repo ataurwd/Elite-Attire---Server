@@ -10,8 +10,10 @@ const stripe = require('stripe')("sk_test_51QgVp5RwZ10FIGO8cVVSkE8OQCilQDNZF1Y9D
 
 app.use(express.json());
 app.use(cookieParser())
-app.use(cors());
-
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://tourism-management-1e7fd.web.app'],
+  credentials: true,
+}))
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.8oded.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -47,10 +49,10 @@ async function run() {
       // to add user data form the database 
       app.post('/user', async (req, res) => {
         const user = req.body;
-        const isExist = { email: user.email }
-        if (isExist) {
-          return res.status(409).send({ message: "User already exists" });
-        }
+        // const isExist = { email: user.email }
+        // if (isExist) {
+        //   return res.status(409).send({ message: "User already exists" });
+        // }
         const result = await userDatabase.insertOne(user);
         res.send(result);
       });
@@ -78,6 +80,20 @@ async function run() {
     // to get product data form the database by
     app.get('/allProduct', async (req, res) => {
         const order = await orderCollection.find().toArray()
+        res.send(order);
+    });
+
+    // to get data base on the id
+    app.get('/allProduct/:id', async (req, res) => {
+        const id = req.params.id;
+        const order = await orderCollection.findOne({ _id: new ObjectId(id) });
+        res.send(order);
+    });
+
+    // to delete single product
+    app.delete('/allProduct/:id', async (req, res) => {
+        const id = req.params.id;
+        const order = await orderCollection.deleteOne({ _id: new ObjectId(id) });
         res.send(order);
     });
 
