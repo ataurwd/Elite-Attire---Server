@@ -12,7 +12,7 @@ const stripe = require('stripe')("sk_test_51QgVp5RwZ10FIGO8cVVSkE8OQCilQDNZF1Y9D
 app.use(express.json());
 app.use(cookieParser())
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://tourism-management-1e7fd.web.app'],
+  origin: ['http://localhost:5173', 'https://ema-job-assignment.web.app'],
   credentials: true,
 }))
 
@@ -57,8 +57,8 @@ const sendEmail = async (to, subject, text) => {
 
 async function run() {
   try {
-    await client.connect();
-    await client.db("admin").command({ ping: 1 });
+    // await client.connect();
+    // await client.db("admin").command({ ping: 1 });
       console.log("Pinged your deployment. You successfully connected to MongoDB!");
       
     // create product database 
