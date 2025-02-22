@@ -5,6 +5,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const cookieParser = require('cookie-parser')
 const port = process.env.PORT || 5000;
+const nodemailer = require('nodemailer');
 // const stripe = require('stripe')(process.env.STRIP_SECRATE_KEY)
 const stripe = require('stripe')("sk_test_51QgVp5RwZ10FIGO8cVVSkE8OQCilQDNZF1Y9Drvhde2BlBoHpkLMC0j8Ysubxnr3uP2tO48WkMhgmU5WzQr4Rmwa00LdcJZYY9")
 
@@ -26,6 +27,33 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+
+
+const sendEmail = async (to, subject, text) => {
+  try {
+      const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+              user: "ataurrahmanbro@gmail.com",
+              pass: "aridgxzovnlzmpby",
+          }
+      });
+
+      const mailOptions = {
+          from: "ataurrahmanbro@gmail.com",
+          to,
+          subject,
+          text
+      };
+
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully:', info.response);
+  } catch (error) {
+      console.error('Error sending email:', error.message);
+  }
+};
+
+
 
 async function run() {
   try {
@@ -198,8 +226,10 @@ app.put('/products/:id', async (req, res) => {
     
     // to save user payment data
     app.post('/payment', async (req, res) => {
-        const payment = req.body;
-        const result = await paymentInfor.insertOne(payment);
+      const payment = req.body;
+      const { status, amount, userEmail } = payment;
+      const result = await paymentInfor.insertOne(payment);
+      await sendEmail(userEmail, "Order Confirmation", `Your payment of $${amount} was successful.`);
         res.send(result);
     });
 
